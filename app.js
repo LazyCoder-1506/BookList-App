@@ -6,24 +6,51 @@ class Book {
   }
 }
 
+class LocalStore {
+  static getBooks() {
+    let books;
+    if (localStorage.getItem('books') === null) {
+      books = [];
+    }
+    else {
+      books = JSON.parse(localStorage.getItem('books'));
+    }
+    return books;
+  }
+
+  static addBook(book) {
+    const books = LocalStore.getBooks();
+    let book_present = false;
+    books.forEach((storeBook) => {
+      if (storeBook.isbn === book.isbn) {
+        UI.showAlert('ISBN Number must be unique', 'danger');
+        book_present = true;
+      }
+    });
+    if (!book_present) {
+      books.push(book);
+      UI.showBooks(Book);
+      UI.showAlert('Book successfully added', 'success');
+      localStorage.setItem('books', JSON.stringify(books));
+    }
+  }
+
+  static removeBook(isbn) {
+    const books = LocalStore.getBooks();
+    books.forEach((book, index) => {
+      if (book.isbn === isbn) {
+        books.splice(index, 1);
+      }
+    });
+    localStorage.setItem('books', JSON.stringify(books));
+  }
+}
+
 class UI {
 
   // function to fetch books from local storage
   static fetchBooks() {
-    const storeBooks = [
-      {
-        title: 'Book One',
-        author: 'Author One',
-        isbn: '64436546545616'
-      },
-      {
-        title: 'Book Two',
-        author: 'Author Two',
-        isbn: '6846552163'
-      }
-    ]
-
-    const booklist = storeBooks;
+    const booklist = LocalStore.getBooks();
 
     booklist.forEach((book) => UI.showBooks(book));
   }
@@ -58,8 +85,7 @@ class UI {
     }
     else {
       const newBook = new Book(title, author, isbn);
-      UI.showBooks(newBook);
-      UI.showAlert('Book successfully added', 'success');
+      LocalStore.addBook(newBook);
     }
 
     document.getElementById('title').value = '';
@@ -72,6 +98,7 @@ class UI {
     if (el.classList.contains('delete')) {
       el.parentElement.parentElement.remove();
       UI.showAlert('Book successfully deleted', 'success');
+      LocalStore.removeBook(el.parentElement.previousElementSibling.textContent);
     }
   }
 
