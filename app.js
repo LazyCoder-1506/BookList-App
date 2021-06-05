@@ -38,7 +38,7 @@ class UI {
       <td>${book.title}</td>
       <td>${book.author}</td>
       <td>${book.isbn}</td>
-      <td><button class="btn btn-sm btn-danger delete"><i class="fa fa-close"></i></button></td>
+      <td><button class="btn btn-sm btn-danger delete">&times;</button></td>
     `;
 
     list.appendChild(row);
@@ -59,6 +59,13 @@ class UI {
     document.getElementById('author').value = '';
     document.getElementById('isbn').value = '';
   }
+
+  // function to delete book
+  static deleteBook(el) {
+    if (el.classList.contains('delete')) {
+      el.parentElement.parentElement.remove();
+    }
+  }
 }
 
 // event listener to show present books when page loads
@@ -66,3 +73,6 @@ document.addEventListener('DOMContentLoaded', UI.fetchBooks());
 
 // event listener to add new book
 document.getElementById('book_entry_form').addEventListener('submit', (e) => UI.addBook(e));
+
+// event listener to delete book
+document.getElementById('book_list').addEventListener('click', (e) => UI.deleteBook(e.target))
