@@ -52,8 +52,15 @@ class UI {
     const author = document.getElementById('author').value;
     const isbn = document.getElementById('isbn').value;
 
-    const newBook = new Book(title, author, isbn);
-    UI.showBooks(newBook);
+    // validate for empty input
+    if (title === '' || author === '' || isbn === '') {
+      UI.showAlert('Please fill all fields', 'danger');
+    }
+    else {
+      const newBook = new Book(title, author, isbn);
+      UI.showBooks(newBook);
+      UI.showAlert('Book successfully added', 'success');
+    }
 
     document.getElementById('title').value = '';
     document.getElementById('author').value = '';
@@ -64,7 +71,19 @@ class UI {
   static deleteBook(el) {
     if (el.classList.contains('delete')) {
       el.parentElement.parentElement.remove();
+      UI.showAlert('Book successfully deleted', 'success');
     }
+  }
+
+  static showAlert(message, classname) {
+    const alert = document.createElement('div');
+    alert.className = `alert alert-${classname}`;
+    alert.appendChild(document.createTextNode(message));
+    const column = document.querySelector('.col-12');
+    const form = document.getElementById('book_entry_form');
+    column.insertBefore(alert, form);
+
+    setTimeout(() => document.querySelector('.alert').remove(), 3000);
   }
 }
 
